@@ -518,16 +518,55 @@ func (s *Service) RevisionDiff(did string, fromNo, toNo int) (label.RevisionDiff
 		}
 		from, to := st.Revisions[did][fromNo-1], st.Revisions[did][toNo-1]
 		oldClaims, newClaims := filterClaims(st.Claims[did], fromNo), filterClaims(st.Claims[did], toNo)
-		affected := map[string]bool{}
-		for _, claim := range newClaims {
-			if claim.InheritedFrom == fromNo && !claim.ReviewValid {
-				affected[claim.ID] = true
-			}
-		}
-		out = buildDiff(did, from, to, oldClaims, newClaims, affected)
+		out = buildDiff(did, from, to, oldClaims, newClaims, computeAffectedClaims(st, did, fromNo, toNo))
 		return nil
 	})
 	return out, err
+}
+
+// computeAffectedClaims rebuilds the set of claims whose review state was
+// invalidated when moving from fromNo to toNo. It mirrors the rules applied by
+// ReviseDetailed: a claim is considered modified when its review status
+// changes between revisions, or when content changes overlap its statement.
+// This keeps the read-only diff consistent with the diff produced at revise
+// time, including claims that were already unreviewed before a content change.
+func computeAffectedClaims(st ledger.State, did string, fromNo, toNo int) map[string]bool {
+	affected := map[string]bool{}
+	if toNo <= fromNo {
+		return affected
+	}
+	byRevision := map[int]map[string]label.Claim{}
+	for _, claim := range st.Claims[did] {
+		if _, ok := byRevision[claim.RevisionNo]; !ok {
+			byRevision[claim.RevisionNo] = map[string]label.Claim{}
+		}
+		byRevision[claim.RevisionNo][claim.ID] = claim
+	}
+	for step := fromNo; step < toNo; step++ {
+		baseContent := st.Revisions[did][step-1].Content
+		nextContent := st.Revisions[did][step].Content
+		baseClaims := byRevision[step]
+		nextClaims := byRevision[step+1]
+		if FactTextChanged(baseContent, nextContent) {
+			ordered := make([]label.Claim, 0, len(baseClaims))
+			for _, claim := range baseClaims {
+				ordered = append(ordered, claim)
+			}
+			for _, id := range ClaimsAffectedByContent(baseContent, nextContent, ordered) {
+				affected[id] = true
+			}
+		}
+		for id, next := range nextClaims {
+			previous, ok := baseClaims[id]
+			if !ok {
+				continue
+			}
+			if next.ReviewValid != previous.ReviewValid {
+				affected[id] = true
+			}
+		}
+	}
+	return affected
 }
 
 func (s *Service) IssueWithKey(did string, expected int, snapshotID, actor, key string) (label.Credential, bool, error) {
