@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -35,6 +36,9 @@ func main() {
 		log.Fatal(err)
 	}
 	if err = st.Migrate(); err != nil {
+		if errors.Is(err, ledger.ErrIntegrity) {
+			log.Fatalf("启动中止：账本完整性校验失败，已拒绝监听：%v", err)
+		}
 		log.Fatal(err)
 	}
 	srv := &http.Server{Addr: resolved, Handler: api.New(workflow.New(st)).Handler(), ReadTimeout: 5 * time.Second, WriteTimeout: 5 * time.Second, IdleTimeout: 10 * time.Second}

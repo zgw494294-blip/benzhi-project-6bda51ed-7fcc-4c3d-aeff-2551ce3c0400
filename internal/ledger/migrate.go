@@ -1,5 +1,9 @@
 package ledger
 
+import (
+	"errors"
+)
+
 const CurrentSchemaVersion = 3
 
 func (s *Store) SchemaVersion() int {
@@ -7,6 +11,14 @@ func (s *Store) SchemaVersion() int {
 	_ = s.View(func(st State) error { v = st.SchemaVersion; return nil })
 	return v
 }
+
+// Migrate reconciles the persisted ledger to the current schema and then
+// verifies that every cross-entity relationship still resolves. The integrity
+// check runs regardless of schema version: a ledger that already reports the
+// current version may still be corrupted on disk, and accepting it would let
+// the service listen on top of broken state. When validation fails Migrate
+// returns an IntegrityError (also wrapped by the sentinel ErrIntegrity) so
+// callers can surface a recognisable startup failure.
 func (s *Store) Migrate() error {
 	return s.Update(func(st *State) error {
 		if st.SchemaVersion < CurrentSchemaVersion {
@@ -55,6 +67,13 @@ func (s *Store) Migrate() error {
 		}
 		if st.SchemaVersion > CurrentSchemaVersion {
 			return ConstraintError{"schemaVersion", "future"}
+		}
+		// Validate cross-entity relationships before accepting the schema
+		// version as good. This runs for current-version ledgers too so that
+		// an orphan snapshot (or other dangling reference) produced by partial
+		// writes or external edits cannot become the running state.
+		if err := ValidateIntegrity(*st); err != nil {
+			return errors.Join(ErrIntegrity, err)
 		}
 		return nil
 	})
