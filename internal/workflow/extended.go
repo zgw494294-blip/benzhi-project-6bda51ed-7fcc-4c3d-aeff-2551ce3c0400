@@ -196,9 +196,6 @@ func equalStrings(a, b []string) bool {
 
 func (s *Service) RunPrecheckWithKey(did string, expected int, actor, key string) (PrecheckResult, error) {
 	var result PrecheckResult
-	if s.cachedOperation(key, &result) {
-		return result, nil
-	}
 	fp := fingerprint(struct {
 		Expected int
 		Actor    string
@@ -246,9 +243,6 @@ func (s *Service) RunPrecheckWithKey(did string, expected int, actor, key string
 		st.Prechecks[did] = append(st.Prechecks[did], label.PrecheckSnapshot{DossierID: did, Version: dossier.Version, RevisionNo: dossier.CurrentRevision, Problems: problems, Status: dossier.Status, Count: len(problems), CreatedAt: time.Now()})
 		return ledger.PutOperation(st, "precheck", did, key, fp, result)
 	})
-	if err == nil {
-		s.rememberOperation(key, result)
-	}
 	return result, err
 }
 

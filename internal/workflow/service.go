@@ -18,41 +18,14 @@ var ErrIdempotency = errors.New("idempotency conflict")
 var ErrIntegrity = errors.New("snapshot integrity failure")
 var ErrImmutable = errors.New("immutable resource")
 
-type cachedOperation struct {
-	result json.RawMessage
-	hits   uint64
-}
-
 type Service struct {
-	Store          *ledger.Store
-	operationCache map[string]*cachedOperation
+	Store *ledger.Store
 }
 
 func New(s *ledger.Store) *Service {
-	return &Service{Store: s, operationCache: map[string]*cachedOperation{}}
+	return &Service{Store: s}
 }
 
-func (s *Service) cachedOperation(key string, result any) bool {
-	if key == "" {
-		return false
-	}
-	entry, ok := s.operationCache[key]
-	if !ok {
-		return false
-	}
-	entry.hits++
-	return json.Unmarshal(entry.result, result) == nil
-}
-
-func (s *Service) rememberOperation(key string, result any) {
-	if key == "" {
-		return
-	}
-	raw, err := json.Marshal(result)
-	if err == nil {
-		s.operationCache[key] = &cachedOperation{result: raw}
-	}
-}
 func id(prefix string) string {
 	b := make([]byte, 8)
 	_, _ = rand.Read(b)
