@@ -538,6 +538,19 @@ func (s *Service) VerifyCredential(no, actor string) (CredentialVerification, er
 		addCheck("dossier_link", snapshotOK && dossierOK && snapshot.DossierID == credential.DossierID, "dossier_link_mismatch")
 		addCheck("revision_link", snapshotOK && credential.RevisionNo == snapshot.RevisionNo, "revision_link_mismatch")
 		addCheck("content_digest_link", snapshotOK && credential.ContentDigest == snapshot.ContentDigest, "content_digest_link_mismatch")
+		evidenceChecksumOK, evidenceDossierOK := true, true
+		if snapshotOK {
+			for _, evidence := range snapshot.EvidenceManifest {
+				if label.Digest(evidence.Excerpt, nil, nil) != evidence.Checksum {
+					evidenceChecksumOK = false
+				}
+				if evidence.DossierID != credential.DossierID {
+					evidenceDossierOK = false
+				}
+			}
+		}
+		addCheck("evidence_checksum", evidenceChecksumOK, "evidence_checksum_mismatch")
+		addCheck("evidence_dossier", evidenceDossierOK, "evidence_dossier_mismatch")
 		result.Valid = true
 		for _, check := range result.Checks {
 			if !check.Valid {
