@@ -32,9 +32,10 @@ type State struct {
 }
 
 type Store struct {
-	mu   sync.RWMutex
-	path string
-	s    State
+	mu    sync.RWMutex
+	path  string
+	s     State
+	epoch uint64
 }
 
 func New(path string) (*Store, error) {
@@ -124,9 +125,11 @@ func (s *Store) Update(fn func(*State) error) error {
 		return e
 	}
 	s.s = next
+	s.epoch++
 	return nil
 }
 func (s *Store) View(fn func(State) error) error { s.mu.RLock(); defer s.mu.RUnlock(); return fn(s.s) }
+func (s *Store) Epoch() uint64 { s.mu.RLock(); defer s.mu.RUnlock(); return s.epoch }
 func (s *Store) GetDossier(id string) (label.Dossier, error) {
 	var d label.Dossier
 	e := s.View(func(st State) error {

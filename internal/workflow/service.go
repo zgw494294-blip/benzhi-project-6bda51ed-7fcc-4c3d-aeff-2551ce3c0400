@@ -23,13 +23,18 @@ type Service struct {
 	Store *ledger.Store
 
 	auditMu    sync.RWMutex
-	auditCache map[string]map[string]any
+	auditCache map[string]auditCacheEntry
+}
+
+type auditCacheEntry struct {
+	epoch uint64
+	value map[string]any
 }
 
 func New(s *ledger.Store) *Service {
 	return &Service{
 		Store:      s,
-		auditCache: make(map[string]map[string]any),
+		auditCache: make(map[string]auditCacheEntry),
 	}
 }
 func id(prefix string) string {
@@ -203,11 +208,12 @@ func (s *Service) Issue(did string, expected int, snapshotID, actor string) (lab
 	return out, err
 }
 func (s *Service) GetAudit(did string) (map[string]any, error) {
+	epoch := s.Store.Epoch()
 	s.auditMu.RLock()
 	cached, ok := s.auditCache[did]
 	s.auditMu.RUnlock()
-	if ok {
-		return cached, nil
+	if ok && cached.epoch == epoch {
+		return cached.value, nil
 	}
 
 	var out = map[string]any{}
@@ -230,7 +236,7 @@ func (s *Service) GetAudit(did string) (map[string]any, error) {
 	})
 	if e == nil {
 		s.auditMu.Lock()
-		s.auditCache[did] = out
+		s.auditCache[did] = auditCacheEntry{epoch: epoch, value: out}
 		s.auditMu.Unlock()
 	}
 	return out, e

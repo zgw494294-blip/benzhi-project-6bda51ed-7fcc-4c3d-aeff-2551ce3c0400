@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 3,
+  "dossiers": {
+    "dos_43ba32058e59f26e": {
+      "id": "dos_43ba32058e59f26e",
+      "exhibitionName": "青铜文明",
+      "objectRef": "OBJ-001",
+      "title": "青铜器",
+      "owner": "editor",
+      "status": "published",
+      "currentRevision": 1,
+      "version": 8,
+      "createdAt": "2026-08-24T08:20:30.56928973+08:00",
+      "updatedAt": "2026-08-24T08:20:30.573316507+08:00"
+    }
+  },
+  "revisions": {
+    "dos_43ba32058e59f26e": [
+      {
+        "dossierId": "dos_43ba32058e59f26e",
+        "number": 1,
+        "content": "商代青铜器。",
+        "claims": [
+          "clm_4dff285d03b0d919"
+        ],
+        "status": "draft",
+        "createdBy": "editor",
+        "createdAt": "2026-08-24T08:20:30.56928973+08:00"
+      }
+    ]
+  },
+  "claims": {
+    "dos_43ba32058e59f26e": [
+      {
+        "id": "clm_4dff285d03b0d919",
+        "dossierId": "dos_43ba32058e59f26e",
+        "revisionNo": 1,
+        "statement": "该器物为商代青铜器",
+        "category": "年代",
+        "evidenceIds": [
+          "ev_7769630085e7810a"
+        ],
+        "reviewDecision": "pass",
+        "reviewReason": "来源充分",
+        "reviewer": "selfcheck",
+        "reviewedAt": "2026-08-24T08:20:30.57172145+08:00",
+        "reviewValid": true
+      }
+    ]
+  },
+  "evidence": {
+    "dos_43ba32058e59f26e": [
+      {
+        "id": "ev_7769630085e7810a",
+        "dossierId": "dos_43ba32058e59f26e",
+        "sourceType": "catalog",
+        "citation": "馆藏图录",
+        "locator": "第12页",
+        "excerpt": "商代青铜器",
+        "reliabilityNote": "馆藏记录",
+        "checksum": "0d0361edf6ed691c3c680c3eb94dfad318b3a73954a6135493c962b0245f96ca",
+        "createdAt": "2026-08-24T08:20:30.570004664+08:00",
+        "createdRevision": 1,
+        "status": "active"
+      }
+    ]
+  },
+  "snapshots": {
+    "snp_6ca8e4f3309d29e0": {
+      "id": "snp_6ca8e4f3309d29e0",
+      "dossierId": "dos_43ba32058e59f26e",
+      "revisionNo": 1,
+      "content": "商代青铜器。",
+      "claimSnapshot": [
+        {
+          "id": "clm_4dff285d03b0d919",
+          "dossierId": "dos_43ba32058e59f26e",
+          "revisionNo": 1,
+          "statement": "该器物为商代青铜器",
+          "category": "年代",
+          "evidenceIds": [
+            "ev_7769630085e7810a"
+          ],
+          "reviewDecision": "pass",
+          "reviewReason": "来源充分",
+          "reviewer": "selfcheck",
+          "reviewedAt": "2026-08-24T08:20:30.57172145+08:00",
+          "reviewValid": true
+        }
+      ],
+      "evidenceManifest": [
+        {
+          "id": "ev_7769630085e7810a",
+          "dossierId": "dos_43ba32058e59f26e",
+          "sourceType": "catalog",
+          "citation": "馆藏图录",
+          "locator": "第12页",
+          "excerpt": "商代青铜器",
+          "reliabilityNote": "馆藏记录",
+          "checksum": "0d0361edf6ed691c3c680c3eb94dfad318b3a73954a6135493c962b0245f96ca",
+          "createdAt": "2026-08-24T08:20:30.570004664+08:00",
+          "createdRevision": 1,
+          "status": "active"
+        }
+      ],
+      "contentDigest": "182adaa27d7443f408f3f33a5d730bbde94808715d72a0c1129f69fb9dd7b770",
+      "frozenBy": "selfcheck",
+      "frozenAt": "2026-08-24T08:20:30.572719535+08:00"
+    }
+  },
+  "credentials": {
+    "PUB-4bc72e98926af8ac": {
+      "credentialNo": "PUB-4bc72e98926af8ac",
+      "dossierId": "dos_43ba32058e59f26e",
+      "snapshotId": "snp_6ca8e4f3309d29e0",
+      "revisionNo": 1,
+      "contentDigest": "182adaa27d7443f408f3f33a5d730bbde94808715d72a0c1129f69fb9dd7b770",
+      "issuedBy": "selfcheck",
+      "issuedAt": "2026-08-24T08:20:30.573310546+08:00",
+      "signature": "366b1cb2e3ebbd9b1f9321d94e2dadd3c3fb3c37aa5d46b940d0a6cc784e8850",
+      "schemaVersion": "1"
+    }
+  },
+  "audits": {
+    "dos_43ba32058e59f26e": [
+      {
+        "id": "20260824082030.569366265",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "dossier.created",
+        "actor": "editor",
+        "detail": "创建案卷",
+        "at": "2026-08-24T08:20:30.569431635+08:00"
+      },
+      {
+        "id": "20260824082030.570010692",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "evidence.added",
+        "actor": "selfcheck",
+        "detail": "ev_7769630085e7810a",
+        "at": "2026-08-24T08:20:30.570011815+08:00"
+      },
+      {
+        "id": "20260824082030.570483701",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "claim.added",
+        "actor": "selfcheck",
+        "detail": "{\"claimId\":\"clm_4dff285d03b0d919\",\"evidenceIds\":[\"ev_7769630085e7810a\"]}",
+        "at": "2026-08-24T08:20:30.570484662+08:00"
+      },
+      {
+        "id": "20260824082030.571043211",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "precheck.passed",
+        "actor": "selfcheck",
+        "detail": "{\"problemCount\":0,\"problems\":[]}",
+        "at": "2026-08-24T08:20:30.571044057+08:00"
+      },
+      {
+        "id": "20260824082030.571722889",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "expert.passed",
+        "actor": "selfcheck",
+        "detail": "[{\"ClaimID\":\"clm_4dff285d03b0d919\",\"Decision\":\"pass\",\"Reason\":\"来源充分\",\"Actor\":\"selfcheck\"}]",
+        "at": "2026-08-24T08:20:30.571724117+08:00"
+      },
+      {
+        "id": "20260824082030.572291365",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "copy.passed",
+        "actor": "selfcheck",
+        "detail": "文字复核通过",
+        "at": "2026-08-24T08:20:30.57229226+08:00"
+      },
+      {
+        "id": "20260824082030.572720549",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "snapshot.frozen",
+        "actor": "selfcheck",
+        "detail": "snp_6ca8e4f3309d29e0",
+        "at": "2026-08-24T08:20:30.572721378+08:00"
+      },
+      {
+        "id": "20260824082030.573316670",
+        "dossierId": "dos_43ba32058e59f26e",
+        "action": "credential.issued",
+        "actor": "selfcheck",
+        "detail": "PUB-4bc72e98926af8ac",
+        "at": "2026-08-24T08:20:30.573317573+08:00"
+      }
+    ]
+  },
+  "idempotency": {},
+  "operations": {
+    "issue|dos_43ba32058e59f26e|selfcheck-issue": {
+      "operation": "issue",
+      "dossierId": "dos_43ba32058e59f26e",
+      "fingerprint": "6aad019932baa0a605594f411135a1963f1621aa8d6b3c575a93e1ea611a84f6",
+      "result": {
+        "credentialNo": "PUB-4bc72e98926af8ac",
+        "dossierId": "dos_43ba32058e59f26e",
+        "snapshotId": "snp_6ca8e4f3309d29e0",
+        "revisionNo": 1,
+        "contentDigest": "182adaa27d7443f408f3f33a5d730bbde94808715d72a0c1129f69fb9dd7b770",
+        "issuedBy": "selfcheck",
+        "issuedAt": "2026-08-24T08:20:30.573310546+08:00",
+        "signature": "366b1cb2e3ebbd9b1f9321d94e2dadd3c3fb3c37aa5d46b940d0a6cc784e8850",
+        "schemaVersion": "1"
+      },
+      "createdAt": "2026-08-24T08:20:30.573323685+08:00"
+    }
+  },
+  "suggestions": {
+    "dos_43ba32058e59f26e": null
+  },
+  "prechecks": {
+    "dos_43ba32058e59f26e": [
+      {
+        "dossierId": "dos_43ba32058e59f26e",
+        "version": 4,
+        "revisionNo": 1,
+        "problems": [],
+        "status": "prechecked",
+        "problemCount": 0,
+        "createdAt": "2026-08-24T08:20:30.571044471+08:00"
+      }
+    ]
+  },
+  "expertDrafts": {},
+  "queryAudits": null
+}
