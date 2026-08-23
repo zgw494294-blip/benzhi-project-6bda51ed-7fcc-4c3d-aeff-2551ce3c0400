@@ -109,14 +109,8 @@ func (s *Store) persistLocked(st State) error {
 func (s *Store) Update(fn func(*State) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	b, e := json.Marshal(s.s)
-	if e != nil {
-		return e
-	}
-	next := newState()
-	if e = json.Unmarshal(b, &next); e != nil {
-		return e
-	}
+	next := s.s
+	var e error
 	if e = fn(&next); e != nil {
 		return e
 	}
