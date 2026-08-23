@@ -9,6 +9,7 @@ import (
 	"museum-label-governance/internal/ledger"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -18,9 +19,19 @@ var ErrIdempotency = errors.New("idempotency conflict")
 var ErrIntegrity = errors.New("snapshot integrity failure")
 var ErrImmutable = errors.New("immutable resource")
 
-type Service struct{ Store *ledger.Store }
+type Service struct {
+	Store *ledger.Store
 
-func New(s *ledger.Store) *Service { return &Service{Store: s} }
+	auditMu    sync.RWMutex
+	auditCache map[string]map[string]any
+}
+
+func New(s *ledger.Store) *Service {
+	return &Service{
+		Store:      s,
+		auditCache: make(map[string]map[string]any),
+	}
+}
 func id(prefix string) string {
 	b := make([]byte, 8)
 	_, _ = rand.Read(b)
@@ -192,6 +203,13 @@ func (s *Service) Issue(did string, expected int, snapshotID, actor string) (lab
 	return out, err
 }
 func (s *Service) GetAudit(did string) (map[string]any, error) {
+	s.auditMu.RLock()
+	cached, ok := s.auditCache[did]
+	s.auditMu.RUnlock()
+	if ok {
+		return cached, nil
+	}
+
 	var out = map[string]any{}
 	e := s.Store.View(func(st ledger.State) error {
 		d, ok := st.Dossiers[did]
@@ -210,6 +228,11 @@ func (s *Service) GetAudit(did string) (map[string]any, error) {
 		out["audits"] = SortAudit(st.Audits[did])
 		return nil
 	})
+	if e == nil {
+		s.auditMu.Lock()
+		s.auditCache[did] = out
+		s.auditMu.Unlock()
+	}
 	return out, e
 }
 func snapshotsFor(st ledger.State, did string) []label.Snapshot {
