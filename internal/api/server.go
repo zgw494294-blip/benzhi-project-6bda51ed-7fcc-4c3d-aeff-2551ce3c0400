@@ -12,7 +12,10 @@ import (
 	"strings"
 )
 
-type Server struct{ svc *workflow.Service }
+type Server struct {
+	svc              *workflow.Service
+	copyReviewBuffer copyReviewReq
+}
 
 func New(s *workflow.Service) *Server { return &Server{svc: s} }
 func (s *Server) Handler() http.Handler {
@@ -422,23 +425,15 @@ type expertReviewReq struct {
 }
 
 type copyReviewReq struct {
-	ExpectedVersion int                 `json:"expectedVersion"`
-	Decision        string              `json:"decision"`
-	Reason          string              `json:"reason"`
-	Suggestions     []copySuggestionReq `json:"suggestions"`
+	ExpectedVersion int                    `json:"expectedVersion"`
+	Decision        string                 `json:"decision"`
+	Reason          string                 `json:"reason"`
+	Suggestions     []label.CopySuggestion `json:"suggestions"`
 }
 
 type issueReq struct {
 	ExpectedVersion int    `json:"expectedVersion"`
 	SnapshotID      string `json:"snapshotId"`
-}
-type copySuggestionReq struct {
-	Kind             string   `json:"kind"`
-	Start            int      `json:"start"`
-	End              int      `json:"end"`
-	Suggestion       string   `json:"suggestion"`
-	AffectedClaimIDs []string `json:"affectedClaimIds"`
-	Resolved         bool     `json:"resolved"`
 }
 
 func (s *Server) precheck(w http.ResponseWriter, r *http.Request, did string) {
@@ -618,16 +613,12 @@ func (s *Server) copy(w http.ResponseWriter, r *http.Request, did string) {
 		writeErr(w, 405, "method_not_allowed", "只支持POST")
 		return
 	}
-	var q copyReviewReq
-	if e := decode(r, &q); e != nil {
+	q := &s.copyReviewBuffer
+	if e := decode(r, q); e != nil {
 		writeErr(w, 400, "invalid_request", e.Error())
 		return
 	}
-	suggestions := make([]label.CopySuggestion, 0, len(q.Suggestions))
-	for _, item := range q.Suggestions {
-		suggestions = append(suggestions, label.CopySuggestion{Kind: item.Kind, Start: item.Start, End: item.End, Suggestion: item.Suggestion, AffectedClaimIDs: item.AffectedClaimIDs, Resolved: item.Resolved})
-	}
-	result, e := s.svc.CopyReviewDetailed(did, expected(r, q.ExpectedVersion), workflow.CopyReviewInput{Decision: q.Decision, Reason: q.Reason, Actor: actor(r), Suggestions: suggestions})
+	result, e := s.svc.CopyReviewDetailed(did, expected(r, q.ExpectedVersion), workflow.CopyReviewInput{Decision: q.Decision, Reason: q.Reason, Actor: actor(r), Suggestions: q.Suggestions})
 	if e != nil {
 		mapErr(w, e)
 		return
