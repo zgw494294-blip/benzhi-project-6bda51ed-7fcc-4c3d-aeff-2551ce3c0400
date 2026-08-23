@@ -1,6 +1,7 @@
 package workflow
 
 import (
+	"context"
 	"museum-label-governance/internal/label"
 	"museum-label-governance/internal/ledger"
 	"sort"
@@ -9,8 +10,12 @@ import (
 )
 
 func (s *Service) UpdateDossier(did string, expected int, patch DossierPatch, actor string) (label.Dossier, error) {
+	return s.UpdateDossierContext(context.Background(), did, expected, patch, actor)
+}
+
+func (s *Service) UpdateDossierContext(ctx context.Context, did string, expected int, patch DossierPatch, actor string) (label.Dossier, error) {
 	var out label.Dossier
-	err := s.Store.Update(func(st *ledger.State) error {
+	err := s.Store.UpdateContext(ctx, func(st *ledger.State) error {
 		dossier, ok := st.Dossiers[did]
 		if !ok {
 			return ledger.ErrNotFound

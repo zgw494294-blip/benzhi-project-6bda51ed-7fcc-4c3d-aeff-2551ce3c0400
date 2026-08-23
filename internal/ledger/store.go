@@ -1,6 +1,7 @@
 package ledger
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"museum-label-governance/internal/label"
@@ -107,6 +108,13 @@ func (s *Store) persistLocked(st State) error {
 	return os.Rename(tmp, s.path)
 }
 func (s *Store) Update(fn func(*State) error) error {
+	return s.UpdateContext(context.Background(), fn)
+}
+
+func (s *Store) UpdateContext(ctx context.Context, fn func(*State) error) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	b, e := json.Marshal(s.s)

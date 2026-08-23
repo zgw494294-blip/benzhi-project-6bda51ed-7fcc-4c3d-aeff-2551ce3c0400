@@ -275,7 +275,7 @@ func (s *Server) patchDossier(w http.ResponseWriter, r *http.Request, did string
 		writeErr(w, 400, "invalid_request", err.Error())
 		return
 	}
-	dossier, err := s.svc.UpdateDossier(did, expected(r, q.ExpectedVersion), workflow.DossierPatch{ExhibitionName: q.ExhibitionName, ObjectRef: q.ObjectRef, Title: q.Title, Owner: q.Owner}, actor(r))
+	dossier, err := s.svc.UpdateDossierContext(r.Context(), did, expected(r, q.ExpectedVersion), workflow.DossierPatch{ExhibitionName: q.ExhibitionName, ObjectRef: q.ObjectRef, Title: q.Title, Owner: q.Owner}, actor(r))
 	if err != nil {
 		mapErr(w, err)
 		return
